@@ -1,0 +1,18 @@
+ext{
+
+    // Android Plugin
+    androidGradlePluginVersion = '7.2.1'
+
+    // Kotlin
+    kotlinVersion = "1.6.21"
+    coroutinesVersion = "1.5.2"
+
+    //Retrofit
+    retrofitVersion="2.9.0"
+    //Gson
+    gsonVerison="2.8.9"
+
+    //okhttp
+    okhttpVersion="5.0.0-alpha.2"
+
+}

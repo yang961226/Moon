@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-internal class MoonCallAdapterFactory(
+class MoonCallAdapterFactory private constructor(
     private val interceptor: GlobalNetworkResultInterceptor
 ) : CallAdapter.Factory() {
 

@@ -6,7 +6,7 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import java.lang.reflect.Type
 
-internal class MoonCallAdapter constructor(
+class MoonCallAdapter constructor(
     private val resultType: Type,
     private val interceptor: GlobalNetworkResultInterceptor
 ) : CallAdapter<Type, Call<NetworkResult<Type>>> {

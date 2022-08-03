@@ -1,7 +1,7 @@
-package com.gitee.moon.ktx
+package com.gitee.sundayting.moon.ktx
 
-import com.gitee.moon.GlobalNetworkResultInterceptor
-import com.gitee.moon.NetworkResult
+import com.gitee.sundayting.moon.GlobalNetworkResultInterceptor
+import com.gitee.sundayting.moon.NetworkResult
 import okhttp3.ResponseBody
 import okio.Buffer
 import okio.ForwardingSource

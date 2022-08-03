@@ -1,7 +1,7 @@
-package com.gitee.moon.internal
+package com.gitee.sundayting.moon.internal
 
-import com.gitee.moon.GlobalNetworkResultInterceptor
-import com.gitee.moon.NetworkResult
+import com.gitee.sundayting.moon.GlobalNetworkResultInterceptor
+import com.gitee.sundayting.moon.NetworkResult
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit

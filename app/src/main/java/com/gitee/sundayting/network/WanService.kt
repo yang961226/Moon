@@ -1,6 +1,6 @@
 package com.gitee.sundayting.network
 
-import com.gitee.moon.NetworkResult
+import com.gitee.sundayting.moon.NetworkResult
 import com.gitee.sundayting.network.bean.ArticleBean
 import com.gitee.sundayting.network.bean.BannerBean
 import com.gitee.sundayting.network.bean.ListBean

@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.gitee.moon.ifFailure
-import com.gitee.moon.ifSuccess
+import com.gitee.sundayting.moon.ifFailure
+import com.gitee.sundayting.moon.ifSuccess
 import com.gitee.sundayting.network.RetrofitUtil
 import com.gitee.sundayting.network.WanService
 import kotlinx.coroutines.launch

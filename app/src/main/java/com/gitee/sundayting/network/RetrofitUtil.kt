@@ -1,9 +1,9 @@
 package com.gitee.sundayting.network
 
-import com.gitee.moon.GlobalNetworkResultInterceptor
-import com.gitee.moon.NetworkResult
-import com.gitee.moon.internal.MoonCallAdapterFactory
-import com.gitee.moon.ktx.toExceptionResult
+import com.gitee.sundayting.moon.GlobalNetworkResultInterceptor
+import com.gitee.sundayting.moon.NetworkResult
+import com.gitee.sundayting.moon.internal.MoonCallAdapterFactory
+import com.gitee.sundayting.moon.ktx.toExceptionResult
 import okhttp3.OkHttpClient
 import okio.IOException
 import retrofit2.Retrofit

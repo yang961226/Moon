@@ -11,12 +11,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitUtil {
 
-    val instance: Retrofit = Retrofit.Builder()
-        .client(OkHttpClient.Builder().build())
-        .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(MoonCallAdapterFactory.create(WanGlobalNetworkResultInterceptor))
-        .baseUrl("https://www.wanandroid.com")
-        .build()
+    val instance: Retrofit by lazy {
+        Retrofit.Builder()
+            .client(OkHttpClient.Builder().build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(MoonCallAdapterFactory.create(WanGlobalNetworkResultInterceptor))
+            .baseUrl("https://www.wanandroid.com")
+            .build()
+    }
 
     object WanGlobalNetworkResultInterceptor : GlobalNetworkResultInterceptor {
 

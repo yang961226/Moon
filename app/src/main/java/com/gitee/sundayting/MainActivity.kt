@@ -1,7 +1,7 @@
 package com.gitee.sundayting
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.gitee.moon.ifFailure
@@ -12,15 +12,15 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    val service = RetrofitUtil.instance.create(WanService::class.java)
+    private val service: WanService = RetrofitUtil.instance.create(WanService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             service.getArticle(0).ifSuccess {
-                Log.d("日志", "成功：$it")
+                Toast.makeText(this@MainActivity, "请求成功！", Toast.LENGTH_LONG).show()
             }.ifFailure {
-                Log.d("日志", "失败：$it")
+                Toast.makeText(this@MainActivity, "请求失败", Toast.LENGTH_SHORT).show()
             }
         }
     }

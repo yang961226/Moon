@@ -11,13 +11,12 @@ import retrofit2.Callback
 import retrofit2.Response
 
 internal class MoonResponseCallDelegate<T>(
-    private val proxyCall: Call<T>,
+    private val realCall: Call<T>,
     private val interceptor: GlobalNetworkResultInterceptor
-) :
-    Call<NetworkResult<T>> {
+) : Call<NetworkResult<T>> {
 
     override fun enqueue(callback: Callback<NetworkResult<T>>) =
-        proxyCall.enqueue(object : Callback<T> {
+        realCall.enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 callback.onResponse(
                     this@MoonResponseCallDelegate,
@@ -36,18 +35,18 @@ internal class MoonResponseCallDelegate<T>(
 
         })
 
-    override fun isExecuted(): Boolean = proxyCall.isExecuted
+    override fun isExecuted(): Boolean = realCall.isExecuted
 
-    override fun cancel() = proxyCall.cancel()
+    override fun cancel() = realCall.cancel()
 
-    override fun isCanceled(): Boolean = proxyCall.isCanceled
+    override fun isCanceled(): Boolean = realCall.isCanceled
 
-    override fun request(): Request = proxyCall.request()
+    override fun request(): Request = realCall.request()
 
-    override fun timeout(): Timeout = proxyCall.timeout()
+    override fun timeout(): Timeout = realCall.timeout()
 
     override fun clone(): Call<NetworkResult<T>> =
-        MoonResponseCallDelegate(proxyCall.clone(), interceptor)
+        MoonResponseCallDelegate(realCall.clone(), interceptor)
 
     override fun execute(): Response<NetworkResult<T>> = throw NotImplementedError()
 

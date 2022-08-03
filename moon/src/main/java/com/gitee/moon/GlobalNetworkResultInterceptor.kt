@@ -10,6 +10,6 @@ interface GlobalNetworkResultInterceptor {
     }
 
     //默认实现
-    object DefaultGlobalNetworkResultInterceptor : GlobalNetworkResultInterceptor
+    object Default : GlobalNetworkResultInterceptor
 
 }

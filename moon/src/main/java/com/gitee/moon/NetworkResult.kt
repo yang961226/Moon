@@ -33,7 +33,8 @@ sealed class NetworkResult<T> {
         /**
          * HTTP协议错误
          */
-        data class ServerError<T>(val response: Response<T>) : Failure<T>(), ResponseGetter {
+        data class ServerError<T>(private val response: Response<T>) : Failure<T>(),
+            ResponseGetter {
             val responseErrorMessage: String by lazy { response.errorBody()?.string().orEmpty() }
             override val code by lazy { response.code() }
             override val headers: Headers by lazy { response.headers() }

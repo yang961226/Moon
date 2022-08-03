@@ -10,7 +10,6 @@ import okio.sink
 import retrofit2.Response
 import java.io.File
 
-// TODO: 2021/12/29 临时封装方案
 fun ResponseBody.downloadAndCount(
     dest: File,
     onDownloadListener: DownloadListener
@@ -49,8 +48,8 @@ interface DownloadListener {
     fun onStop(downloadBytes: Long, totalBytes: Long, exception: Exception?) {}
 }
 
-fun <T> Response<T>.toNetworkResult(interceptor: GlobalNetworkResultInterceptor): NetworkResult<T> =
-    interceptor.onIntercept(
+fun <T> Response<T>.toNetworkResult(interceptor: GlobalNetworkResultInterceptor): NetworkResult<T> {
+    return interceptor.onIntercept(
         try {
             if (isSuccessful) {
                 toSuccessResult()
@@ -61,6 +60,8 @@ fun <T> Response<T>.toNetworkResult(interceptor: GlobalNetworkResultInterceptor)
             t.toExceptionResult()
         }
     )
+}
+
 
 fun <T> Response<T>.toSuccessResult(): NetworkResult.Success<T> {
     return NetworkResult.Success(this)

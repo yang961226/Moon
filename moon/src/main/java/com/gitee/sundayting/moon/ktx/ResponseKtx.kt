@@ -51,26 +51,18 @@ interface DownloadListener {
 fun <T> Response<T>.toNetworkResult(interceptor: GlobalNetworkResultInterceptor): NetworkResult<T> {
     return interceptor.onIntercept(
         try {
-            if (isSuccessful) {
-                toSuccessResult()
-            } else {
-                toServerErrorResult()
-            }
+            toSuccess()
         } catch (t: Throwable) {
-            t.toExceptionResult()
+            t.toException()
         }
     )
 }
 
 
-fun <T> Response<T>.toSuccessResult(): NetworkResult.Success<T> {
+fun <T> Response<T>.toSuccess(): NetworkResult.Success<T> {
     return NetworkResult.Success(this)
 }
 
-fun <T> Response<T>.toServerErrorResult(): NetworkResult.Failure.ServerError<T> {
-    return NetworkResult.Failure.ServerError(this)
-}
-
-fun <T> Throwable.toExceptionResult(): NetworkResult.Failure.Exception<T> {
+fun <T> Throwable.toException(): NetworkResult.Failure.Exception<T> {
     return NetworkResult.Failure.Exception(this)
 }

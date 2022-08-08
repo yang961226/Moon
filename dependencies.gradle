@@ -5,7 +5,7 @@ ext{
 
     // Kotlin
     kotlinVersion = "1.6.21"
-    coroutinesVersion = "1.5.2"
+    coroutinesVersion = "1.6.3"
 
     //Retrofit
     retrofitVersion="2.9.0"

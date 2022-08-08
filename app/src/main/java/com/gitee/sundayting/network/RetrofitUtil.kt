@@ -3,9 +3,9 @@ package com.gitee.sundayting.network
 import com.gitee.sundayting.moon.GlobalNetworkResultInterceptor
 import com.gitee.sundayting.moon.NetworkResult
 import com.gitee.sundayting.moon.internal.MoonCallAdapterFactory
-import com.gitee.sundayting.moon.ktx.toExceptionResult
+import com.gitee.sundayting.moon.isSuccess
+import com.gitee.sundayting.moon.ktx.toException
 import okhttp3.OkHttpClient
-import okio.IOException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -23,17 +23,12 @@ object RetrofitUtil {
     object WanGlobalNetworkResultInterceptor : GlobalNetworkResultInterceptor {
 
         override fun <T> onIntercept(networkResult: NetworkResult<T>): NetworkResult<T> {
-            return if (
-            //只有成功才转换
-                networkResult is NetworkResult.Success &&
-                //只转换这种类型的Bean
-                networkResult.responseBody is WanBeanWrapper<*>
-            ) {
+            return if (networkResult.isSuccess() && networkResult.body is WanBeanWrapper<*>) {
                 //类型强转
-                val wanBeanWrapper = (networkResult.responseBody as WanBeanWrapper<*>)
+                val wanBeanWrapper = (networkResult.body as WanBeanWrapper<*>)
                 //如果不成功
                 if (!wanBeanWrapper.isSuccessful()) {
-                    return IOException(wanBeanWrapper.errorMsg).toExceptionResult()
+                    return WanErrorException(wanBeanWrapper.errorMsg).toException()
                 }
                 networkResult
             } else {

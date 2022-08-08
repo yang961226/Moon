@@ -2,7 +2,7 @@ package com.gitee.sundayting.moon.internal
 
 import com.gitee.sundayting.moon.GlobalNetworkResultInterceptor
 import com.gitee.sundayting.moon.NetworkResult
-import com.gitee.sundayting.moon.ktx.toExceptionResult
+import com.gitee.sundayting.moon.ktx.toException
 import com.gitee.sundayting.moon.ktx.toNetworkResult
 import okhttp3.Request
 import okio.Timeout
@@ -29,7 +29,7 @@ internal class MoonResponseCallDelegate<T>(
             override fun onFailure(call: Call<T>, t: Throwable) {
                 callback.onResponse(
                     this@MoonResponseCallDelegate,
-                    Response.success(t.toExceptionResult())
+                    Response.success(t.toException())
                 )
             }
 

@@ -2,94 +2,89 @@ package com.gitee.sundayting.moon
 
 import okhttp3.Headers
 import retrofit2.Response
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 sealed class NetworkResult<T> {
 
-    private interface ResponseGetter {
-        //http状态码
+    interface ResponseContent {
         val code: Int
-
-        //响应头
+        val httpMessage: String
         val headers: Headers
-
-        //请求Url（部分场景用于判断）
-        val url: String
     }
 
-    /**
-     * 网络请求成功
-     */
-    class Success<T>(private val response: Response<T>) : NetworkResult<T>(), ResponseGetter {
-        val responseBody by lazy { response.body()!! }
+    class Success<T>(response: Response<T>) : NetworkResult<T>(), ResponseContent {
+
+        init {
+            assert(response.body() != null)
+            assert(response.isSuccessful)
+        }
+
+        val body by lazy { response.body()!! }
         override val code by lazy { response.code() }
-        override val headers: Headers by lazy { response.headers() }
-        override val url by lazy { response.raw().request.url.toString() }
+        override val httpMessage by lazy { response.message() }
+        override val headers by lazy { response.headers() }
     }
 
-    /**
-     * 网络请求失败
-     */
     sealed class Failure<T> : NetworkResult<T>() {
-        /**
-         * HTTP协议错误
-         */
-        data class ServerError<T>(private val response: Response<T>) : Failure<T>(),
-            ResponseGetter {
-            val responseErrorMessage: String by lazy { response.errorBody()?.string().orEmpty() }
+
+        class Exception<T>(val exception: Throwable) : Failure<T>()
+
+        class StatusError<T>(response: Response<T>) : Failure<T>(), ResponseContent {
+
+            init {
+                assert(!response.isSuccessful)
+            }
+
+            val errorBody by lazy { response.errorBody()!!.string() }
             override val code by lazy { response.code() }
-            override val headers: Headers by lazy { response.headers() }
-            override val url by lazy { response.raw().request.url.toString() }
-        }
-
-        /**
-         * 网络请求出现异常
-         */
-        data class Exception<T>(val exception: Throwable) : Failure<T>() {
-//            val exceptionMessage: String by lazy {
-//                HttpExceptionParserHolder.parse(exception)
-//            }
+            override val httpMessage by lazy { response.message() }
+            override val headers by lazy { response.headers() }
         }
 
     }
+
 }
 
-/**
- * 网络请求成功时操作
- */
-inline fun <reified T> NetworkResult<T>.ifSuccess(action: (NetworkResult.Success<T>) -> Unit): NetworkResult<T> {
-    if (this is NetworkResult.Success) action(this)
-    return this
-}
-
-/**
- * 网络请求中，服务器已响应但HTTP协议出现错误时（例如404，502）操作
- */
-inline fun <reified T> NetworkResult<T>.ifServerError(action: (NetworkResult.Failure.ServerError<T>) -> Unit): NetworkResult<T> {
-    if (this is NetworkResult.Failure.ServerError) action(this)
-    return this
-}
-
-/**
- * 网络请求中，出现异常时（例如解析JSON异常，超时异常，连接网络失败异常等）操作
- */
-inline fun <reified T> NetworkResult<T>.ifException(action: (NetworkResult.Failure.Exception<T>) -> Unit): NetworkResult<T> {
-    if (this is NetworkResult.Failure.Exception) action(this)
-    return this
-}
-
-/**
- * 网络请求失败（包括[ifServerError]和[ifException]两种情况）
- */
-inline fun <reified T> NetworkResult<T>.ifFailure(action: (errorMsg: String) -> Unit): NetworkResult<T> {
-    if (this is NetworkResult.Failure) {
-        action(getFailureMessage())
+@OptIn(ExperimentalContracts::class)
+fun <T> NetworkResult<T>.isSuccess(): Boolean {
+    contract {
+        returns(true) implies (this@isSuccess is NetworkResult.Success)
+        returns(false) implies (this@isSuccess is NetworkResult.Failure)
     }
-    return this
+    return this is NetworkResult.Success
 }
 
-inline fun <reified T> NetworkResult.Failure<T>.getFailureMessage(): String {
-    return when (this) {
-        is NetworkResult.Failure.ServerError -> responseErrorMessage
-        is NetworkResult.Failure.Exception -> this.exception.message.orEmpty()
+@OptIn(ExperimentalContracts::class)
+fun <T> NetworkResult<T>.isException(): Boolean {
+    contract {
+        returns(true) implies (this@isException is NetworkResult.Failure.Exception)
     }
+    return this is NetworkResult.Failure.Exception
+}
+
+@OptIn(ExperimentalContracts::class)
+fun <T> NetworkResult<T>.isStatusError(): Boolean {
+    contract {
+        returns(true) implies (this@isStatusError is NetworkResult.Failure.StatusError)
+    }
+    return this is NetworkResult.Failure.StatusError
+}
+
+@OptIn(ExperimentalContracts::class)
+fun <T> NetworkResult.Failure<T>.isException(): Boolean {
+    contract {
+        returns(true) implies (this@isException is NetworkResult.Failure.Exception)
+        returns(false) implies (this@isException is NetworkResult.Failure.StatusError)
+    }
+    return this is NetworkResult.Failure.Exception
+}
+
+@OptIn(ExperimentalContracts::class)
+fun <T> NetworkResult.Failure<T>.isStatusError(): Boolean {
+    contract {
+        returns(false) implies (this@isStatusError is NetworkResult.Failure.Exception)
+        returns(true) implies (this@isStatusError is NetworkResult.Failure.StatusError)
+    }
+    return this is NetworkResult.Failure.StatusError
 }

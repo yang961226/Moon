@@ -1,7 +1,7 @@
 package com.gitee.sundayting.moon.internal
 
-import com.gitee.sundayting.moon.GlobalNetworkResultInterceptor
-import com.gitee.sundayting.moon.NetworkResult
+import com.gitee.sundayting.moon.NetworkResultTransformer
+import com.gitee.sundayting.moon.Result
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
@@ -9,7 +9,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class MoonCallAdapterFactory private constructor(
-    private val interceptor: GlobalNetworkResultInterceptor = GlobalNetworkResultInterceptor.Default
+    private val interceptor: NetworkResultTransformer = NetworkResultTransformer.Default
 ) : CallAdapter.Factory() {
 
     override fun get(
@@ -21,7 +21,7 @@ class MoonCallAdapterFactory private constructor(
             Call::class.java -> {
                 val callType = getParameterUpperBound(0, returnType as ParameterizedType)
                 when (getRawType(callType)) {
-                    NetworkResult::class.java -> {
+                    Result::class.java -> {
                         val resultType = getParameterUpperBound(0, callType as ParameterizedType)
                         MoonCallAdapter(resultType, interceptor)
                     }
@@ -34,19 +34,19 @@ class MoonCallAdapterFactory private constructor(
     companion object {
 
         fun create(
-            interceptor: GlobalNetworkResultInterceptor = GlobalNetworkResultInterceptor.Default
+            interceptor: NetworkResultTransformer = NetworkResultTransformer.Default
         ): MoonCallAdapterFactory = MoonCallAdapterFactory(interceptor)
 
     }
 
     class MoonCallAdapter constructor(
         private val resultType: Type,
-        private val interceptor: GlobalNetworkResultInterceptor
-    ) : CallAdapter<Type, Call<NetworkResult<Type>>> {
+        private val interceptor: NetworkResultTransformer
+    ) : CallAdapter<Type, Call<Result<Type>>> {
 
         override fun responseType() = resultType
 
-        override fun adapt(call: Call<Type>): Call<NetworkResult<Type>> =
+        override fun adapt(call: Call<Type>): Call<Result<Type>> =
             MoonResponseCallDelegate(call, interceptor)
 
     }

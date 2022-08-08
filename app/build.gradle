@@ -6,6 +6,10 @@ plugins {
 android {
     compileSdk 32
 
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions.freeCompilerArgs += ["-opt-in=kotlin.RequiresOptIn"]
+    }
+
     defaultConfig {
         applicationId "com.gitee.sundayting"
         minSdk 23

@@ -7,8 +7,50 @@ plugins {
 
 publishing{
     publications{
+        release(MavenPublication){
+            pom{
+                name="Moon"
+                description = "A network request framework as elegant as the moon"
+                url="https://github.com/yang961226/Moon"
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'yang961226'
+                        name = 'yangmaoting'
+                        email = '524250484@qq.com'
+                    }
+                }
+                scm{
+                    connection="https://github.com/yang961226/Moon.git"
+                    developerConnection="https://github.com/yang961226/Moon.git"
+                    url="https://github.com/yang961226/Moon"
+                }
 
+            }
+
+            groupId "io.github.yang961226"
+            artifactId "moon"
+            version "1.0-alpha01"
+        }
     }
+    repositories {
+        maven{
+            url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials{
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.release
 }
 
 android {

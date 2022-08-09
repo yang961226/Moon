@@ -41,14 +41,14 @@ interface DownloadListener {
     fun onStop(downloadBytes: Long, totalBytes: Long, exception: Exception?) {}
 }
 
-fun <T> Response<T>.toResult(transform: (Result<T>) -> Result<T>): Result<T> {
-    return transform(
-        if (isSuccessful) {
-            toSuccessResult()
-        } else {
-            Result.ServerErrorException(this).toExceptionResult()
-        }
-    )
+fun <T> Response<T>.toResult(): Result<T> = try {
+    if (isSuccessful) {
+        toSuccessResult()
+    } else {
+        Result.ServerErrorException(this).toExceptionResult()
+    }
+} catch (t: Throwable) {
+    t.toExceptionResult()
 }
 
 

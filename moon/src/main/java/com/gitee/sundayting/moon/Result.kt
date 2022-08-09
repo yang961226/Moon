@@ -22,8 +22,8 @@ sealed class Result<out T> {
 
         val body by lazy { response.body()!! }
         override val code by lazy { response.code() }
-        override val httpMessage by lazy { response.message() }
-        override val headers by lazy { response.headers() }
+        override val httpMessage: String by lazy { response.message() }
+        override val headers: Headers by lazy { response.headers() }
     }
 
     class Failure internal constructor(val exception: Throwable) : Result<Nothing>()
@@ -36,8 +36,8 @@ sealed class Result<out T> {
 
         val errorBody by lazy { response.errorBody()!!.string() }
         override val code by lazy { response.code() }
-        override val httpMessage by lazy { response.message() }
-        override val headers by lazy { response.headers() }
+        override val httpMessage: String by lazy { response.message() }
+        override val headers: Headers by lazy { response.headers() }
     }
 
 }

@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitUtil {
 
-    val instance: Retrofit by lazy {
+    val instance: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         Retrofit.Builder()
             .client(OkHttpClient.Builder().build())
             .addConverterFactory(GsonConverterFactory.create())

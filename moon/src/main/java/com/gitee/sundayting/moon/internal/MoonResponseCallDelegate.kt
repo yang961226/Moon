@@ -21,9 +21,9 @@ internal class MoonResponseCallDelegate<T>(
                 callback.onResponse(
                     this@MoonResponseCallDelegate,
                     Response.success(
-                        response.toResult {
-                            transformer.transformerBy(it)
-                        }
+                        transformer.transformerBy(
+                            response.toResult()
+                        )
                     )
                 )
             }

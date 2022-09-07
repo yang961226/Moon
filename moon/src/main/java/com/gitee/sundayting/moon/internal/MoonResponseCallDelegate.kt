@@ -1,9 +1,9 @@
 package com.gitee.sundayting.moon.internal
 
-import com.gitee.sundayting.moon.NetworkResultTransformer
-import com.gitee.sundayting.moon.Result
-import com.gitee.sundayting.moon.ktx.toExceptionResult
-import com.gitee.sundayting.moon.ktx.toResult
+import com.gitee.sundayting.moon.MoonInitializer
+import com.gitee.sundayting.moon.NResult
+import com.gitee.sundayting.moon.ktx.toNFailure
+import com.gitee.sundayting.moon.ktx.toNSuccess
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call
@@ -12,17 +12,16 @@ import retrofit2.Response
 
 internal class MoonResponseCallDelegate<T>(
     private val realCall: Call<T>,
-    private val transformer: NetworkResultTransformer
-) : Call<Result<T>> {
+) : Call<NResult<T>> {
 
-    override fun enqueue(callback: Callback<Result<T>>) =
+    override fun enqueue(callback: Callback<NResult<T>>) =
         realCall.enqueue(object : Callback<T> {
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 callback.onResponse(
                     this@MoonResponseCallDelegate,
                     Response.success(
-                        transformer.transformerBy(
-                            response.toResult()
+                        MoonInitializer.instance.resultTransformer.transformerBy(
+                            response.toNSuccess()
                         )
                     )
                 )
@@ -31,7 +30,7 @@ internal class MoonResponseCallDelegate<T>(
             override fun onFailure(call: Call<T>, t: Throwable) {
                 callback.onResponse(
                     this@MoonResponseCallDelegate,
-                    Response.success(t.toExceptionResult())
+                    Response.success(t.toNFailure())
                 )
             }
 
@@ -47,10 +46,10 @@ internal class MoonResponseCallDelegate<T>(
 
     override fun timeout(): Timeout = realCall.timeout()
 
-    override fun clone(): Call<Result<T>> =
-        MoonResponseCallDelegate(realCall.clone(), transformer)
+    override fun clone(): Call<NResult<T>> =
+        MoonResponseCallDelegate(realCall.clone())
 
-    override fun execute(): Response<Result<T>> = throw NotImplementedError()
+    override fun execute(): Response<NResult<T>> = throw NotImplementedError()
 
 
 }

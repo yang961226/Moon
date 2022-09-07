@@ -1,7 +1,7 @@
-package com.gitee.sundayting.moon.internal
+package com.gitee.sundayting.moon
 
-import com.gitee.sundayting.moon.NetworkResultTransformer
-import com.gitee.sundayting.moon.Result
+import com.gitee.sundayting.moon.global.NetworkResultTransformer
+import com.gitee.sundayting.moon.internal.MoonResponseCallDelegate
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
@@ -21,7 +21,7 @@ class MoonCallAdapterFactory private constructor(
             Call::class.java -> {
                 val callType = getParameterUpperBound(0, returnType as ParameterizedType)
                 when (getRawType(callType)) {
-                    Result::class.java -> {
+                    NResult::class.java -> {
                         val resultType = getParameterUpperBound(0, callType as ParameterizedType)
                         MoonCallAdapter(resultType, interceptor)
                     }
@@ -42,12 +42,12 @@ class MoonCallAdapterFactory private constructor(
     class MoonCallAdapter constructor(
         private val resultType: Type,
         private val interceptor: NetworkResultTransformer
-    ) : CallAdapter<Type, Call<Result<Type>>> {
+    ) : CallAdapter<Type, Call<NResult<Type>>> {
 
         override fun responseType() = resultType
 
-        override fun adapt(call: Call<Type>): Call<Result<Type>> =
-            MoonResponseCallDelegate(call, interceptor)
+        override fun adapt(call: Call<Type>): Call<NResult<Type>> =
+            MoonResponseCallDelegate(call)
 
     }
 

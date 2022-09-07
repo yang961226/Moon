@@ -1,61 +1,60 @@
 package com.gitee.sundayting.moon.ktx
 
-import com.gitee.sundayting.moon.Result
+import com.gitee.sundayting.moon.MoonInitializer
+import com.gitee.sundayting.moon.NResult
+import com.gitee.sundayting.moon.exception.NException
+import com.gitee.sundayting.moon.exception.ServerErrorException
 import retrofit2.Response
 
-//fun ResponseBody.downloadAndCount(
-//    dest: File,
-//    onDownloadListener: DownloadListener
-//) {
-//    val contentLength = contentLength()
-//    var totalRead = 0L
-//    try {
-//        if (!dest.exists()) {
-//            dest.createNewFile()
-//        }
-//        dest.sink().buffer().use { bufferedSink ->
-//            bufferedSink.writeAll(object : ForwardingSource(source()) {
-//                override fun read(sink: Buffer, byteCount: Long): Long {
-//                    val bytesRead = super.read(sink, byteCount)
-//                    if (bytesRead != -1L) {
-//                        totalRead += bytesRead
-//                        onDownloadListener.onProgressChange(totalRead, contentLength)
-//                    }
-//                    return bytesRead
-//                }
-//            })
-//        }
-//    } catch (e: Exception) {
-//        onDownloadListener.onStop(
-//            totalBytes = contentLength, downloadBytes = totalRead,
-//            exception = e
-//        )
-//    } finally {
-//        onDownloadListener.onFinish(totalBytes = contentLength, downloadBytes = totalRead)
-//    }
-//}
 
-interface DownloadListener {
-    fun onProgressChange(downloadBytes: Long, totalBytes: Long)
-    fun onFinish(downloadBytes: Long, totalBytes: Long) {}
-    fun onStop(downloadBytes: Long, totalBytes: Long, exception: Exception?) {}
-}
-
-fun <T> Response<T>.toResult(): Result<T> = try {
+/**
+ * 将[Response]转译成[NResult]
+ *
+ * 转换规则如下：
+ *
+ * 如果网络请求成功，即HTTP协议码处于200-300之间，则返回[NResult.NSuccess]
+ *
+ * 如果网络请求失败或者发生其他异常，则返回[NResult.NFailure]
+ */
+fun <T> Response<T>.toNetResult(): NResult<T> = try {
     if (isSuccessful) {
-        toSuccessResult()
+        toNSuccess()
     } else {
-        Result.ServerErrorException(this).toExceptionResult()
+        toNFailure()
     }
 } catch (t: Throwable) {
-    t.toExceptionResult()
+    t.toNFailure()
 }
 
-
-fun <T> Response<T>.toSuccessResult(): Result.Success<T> {
-    return Result.Success(this)
+/**
+ * 将[Response]转译为[NResult.NSuccess]
+ */
+fun <T> Response<T>.toNSuccess(): NResult.NSuccess<T> {
+    assert(isSuccessful) { "严禁将失败的http请求转成成功结果！" }
+    return NResult.NSuccess(this)
 }
 
-fun Throwable.toExceptionResult(): Result.Failure {
-    return Result.Failure(this)
+/**
+ * 将[Response]转译为[NResult.NFailure]，这种情况只发生于HTTP协议错误的情况下
+ *
+ * 其中，[NResult.NFailure]的异常会通过[NException]包裹，其异常信息会用
+ */
+fun Response<*>.toNFailure(): NResult.NFailure {
+    assert(!isSuccessful) { "严禁将成功的http请求转成失败结果！" }
+    val serverException = ServerErrorException(code(), errorBody())
+    return NResult.NFailure(
+        NException(
+            MoonInitializer.instance.nativeLangTransformer.rawToNativeMsg(serverException),
+            serverException
+        )
+    )
+}
+
+fun Throwable.toNFailure(): NResult.NFailure {
+    return NResult.NFailure(
+        NException(
+            MoonInitializer.instance.nativeLangTransformer.rawToNativeMsg(this),
+            this
+        )
+    )
 }

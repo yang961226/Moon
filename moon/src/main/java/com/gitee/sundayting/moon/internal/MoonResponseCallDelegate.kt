@@ -3,7 +3,7 @@ package com.gitee.sundayting.moon.internal
 import com.gitee.sundayting.moon.MoonInitializer
 import com.gitee.sundayting.moon.NResult
 import com.gitee.sundayting.moon.ktx.toNFailure
-import com.gitee.sundayting.moon.ktx.toNSuccess
+import com.gitee.sundayting.moon.ktx.toNetResult
 import okhttp3.Request
 import okio.Timeout
 import retrofit2.Call
@@ -21,7 +21,7 @@ internal class MoonResponseCallDelegate<T>(
                     this@MoonResponseCallDelegate,
                     Response.success(
                         MoonInitializer.instance.resultTransformer.transformerBy(
-                            response.toNSuccess()
+                            response.toNetResult()
                         )
                     )
                 )
